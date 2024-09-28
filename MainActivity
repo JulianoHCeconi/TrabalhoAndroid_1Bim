@@ -1,0 +1,154 @@
+package com.example.trabalho_1bim;
+
+import android.os.Bundle;
+import android.text.TextUtils;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+
+import androidx.activity.EdgeToEdge;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
+
+public class MainActivity extends AppCompatActivity {
+
+    private EditText etNome;
+    private EditText etEmail;
+    private EditText etIdade;
+    private EditText etDisciplina;
+    private EditText etPrimeiroBim;
+    private EditText etSegundoBim;
+    private Button btEnviar;
+    private Button btLimpar;
+    private TextView tvResultado;
+    private TextView tvErro;
+
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        EdgeToEdge.enable(this);
+        setContentView(R.layout.activity_main);
+
+        etNome = findViewById(R.id.etNome);
+        etEmail = findViewById(R.id.etEmail);
+        etIdade = findViewById(R.id.etIdade);
+        etDisciplina = findViewById(R.id.etDisciplina);
+        etPrimeiroBim = findViewById(R.id.etPrimeiroBim);
+        etSegundoBim = findViewById(R.id.etSegundoBim);
+        btEnviar = findViewById(R.id.btEnviar);
+        btLimpar = findViewById(R.id.btLimpar);
+        tvResultado = findViewById(R.id.tvResultado);
+        tvErro = findViewById(R.id.tvErro);
+
+        btEnviar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                enviaDados();
+            }
+        });
+
+        btLimpar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                limpaDados();
+            }
+        });
+
+    }
+
+
+    private void enviaDados() {
+
+        String nome = etNome.getText().toString();
+        String email = etEmail.getText().toString();
+        int idade = Integer.parseInt(etIdade.getText().toString());
+        String disciplina = etDisciplina.getText().toString();
+        double ntPrimeiroBim = Double.parseDouble(etPrimeiroBim.getText().toString());
+        double ntSegundoBim = Double.parseDouble(etSegundoBim.getText().toString());
+        double media = (ntPrimeiroBim + ntSegundoBim) / 2;
+
+        tvErro.setVisibility(View.GONE);
+        tvResultado.setVisibility(View.GONE);
+
+        if(TextUtils.isEmpty(nome)){
+            mostrarErro("O nome é OBRIGATÓRIO!!");
+            return;
+        }
+
+        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            mostrarErro("Email INVÁLIDO!!");
+            return;
+        }
+
+        try {
+            if (idade <= 0) {
+                mostrarErro("A idade deve ser um número positivo");
+                return;
+            }
+        } catch (NumberFormatException e) {
+            mostrarErro("A idade deve ser um número válido");
+            return;
+        }
+
+        if (TextUtils.isEmpty(disciplina)) {
+            mostrarErro("O campo de disciplina está vazio");
+            return;
+        }
+
+
+        try {
+            if (ntPrimeiroBim < 0 || ntPrimeiroBim > 10 || ntSegundoBim < 0 || ntSegundoBim > 10) {
+                mostrarErro("As notas devem estar entre 0 e 10");
+                return;
+            }
+        } catch (NumberFormatException e) {
+            mostrarErro("As notas devem ser números válidos");
+            return;
+        }
+
+
+        String situacao;
+
+        String resultado = "Nome: " + nome + "\n" +
+                "E-mail: " + email + "\n" +
+                "Idade: " + idade + "\n" +
+                "Disciplina: " + disciplina + "\n" +
+                "Nota 1° Bim: " + ntPrimeiroBim + "\n" +
+                "Nota 2° Bim: " + ntSegundoBim + "\n" +
+                "Media: " + media + "\n" +
+                "Situação: ";
+
+            if(media >= 6){
+                situacao = "Aprovado!";
+            }else{
+                situacao = "Reprovado!";
+            }
+
+            resultado += situacao;
+            tvResultado.append(resultado + "\n\n");
+            tvResultado.setVisibility(View.VISIBLE);
+
+    }
+
+    private void mostrarErro(String mensagem) {
+        tvErro.setText(mensagem);
+        tvErro.setVisibility(View.VISIBLE);
+    }
+
+    private void limpaDados() {
+
+        etNome.setText("");
+        etEmail.setText("");
+        etIdade.setText("");
+        etDisciplina.setText("");
+        etPrimeiroBim.setText("");
+        etSegundoBim.setText("");
+        tvErro.setVisibility(View.GONE);
+        tvResultado.setVisibility(View.GONE);
+    }
+
+}
